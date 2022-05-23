@@ -2,7 +2,7 @@ import string
 import unidecode
 from unicodedata import normalize
 
-r  = open('hino_tricolor.txt','r')
+r  = open('\hino_tricolor.txt','r')
 
 r = r.read()
 #r = unidecode.unidecode(r) 
