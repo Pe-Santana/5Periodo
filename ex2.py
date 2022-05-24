@@ -7,7 +7,7 @@ arq = 'nome'
 
 while (1):
     #definir o tipo de operação
-    tipo = input("(1 - Definir Vocabulário | 2 - Bag of Words\nTipo de operação:")
+    tipo = input("(>>1<< - Definir Vocabulário | >>2<< - Bag of Words)\n\nTipo de operação:")
 
     if (tipo == '1'):
         arq = input("insira o nome do arquivo: ")
@@ -37,7 +37,7 @@ while (1):
             for element in r_resultante:
                 resp.write(element + "\n")
             resp.close()
-            print('Vocabulario definido.')
+            print('Vocabulario definido.\n\n')
     
     elif(tipo == '2'):
         
@@ -46,10 +46,12 @@ while (1):
         if (arq == '1'):
             break
         else:
-            arq_txt = input("insira o nome do arquivo r2: ")
+            arq_txt = input("insira o nome do arquivo: ")
             
             r = open(arq + '.txt', 'r')
             r = r.read()
+            r = r.lower().split()
+
             
             #trasnformando o txt para comparação
             r2 = open(arq_txt + '.txt', 'r')
@@ -67,17 +69,19 @@ while (1):
                 if element not in r_resultante:
                     r_resultante.append(element)
 
+
+
             resp = []
-            for element in r_resultante:
-                for element2 in r:
-                    if(element == element2):
-                        resp.append(1)
-                    else:
-                        resp.append(0)
+            for element in r:
+                if element in r_resultante: 
+                    resp.append(1)
+                else:
+                    resp.append(0)
 
 
                           
-            print(resp)            
+            print(resp)
+            print('\n\n')            
     else:
         break
 
