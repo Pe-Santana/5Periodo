@@ -1,18 +1,19 @@
 update conta set saldo_conta=0;
---PRIMEIRO CONFERIMOS COMO ESTá A SITUAçãO DAS CONTAS
+--PRIMEIRO CONFERIMOS COMO ESTï¿½ A SITUAï¿½ï¿½O DAS CONTAS
 select * from conta;
 
---EXECUTAMOS OUTRA CONFERENCIA PARA VER COMO SERãO OS RETORNOS DA PESQUISA
-select getliquido(numero_conta, nome_agencia) from conta
+--EXECUTAMOS OUTRA CONFERENCIA PARA VER COMO SERï¿½O OS RETORNOS DA PESQUISA
+select getliquido(numero_conta, nome_agencia, nome_cliente) from conta
+
 
 --DEPOIS ATUALIZAMOS ...
-update conta set saldo_conta=getliquido(numero_conta, nome_cliente);
+update conta set saldo_conta=getliquido(numero_conta,nome_agencia , nome_cliente);
 
 --... E CONFERINDO DE NOVO:
 
 select * from conta where nome_agencia = 'PUC';
 
---A DEFINIÇÃO DA FUNÇÃO GETLIQUIDO
+--A DEFINIï¿½ï¿½O DA FUNï¿½ï¿½O GETLIQUIDO
 
 CREATE OR REPLACE FUNCTION getliquido(p_numero_conta integer, p_nome_agencia character varying, p_nome_cliente character varying)
   RETURNS float AS
@@ -33,7 +34,7 @@ BEGIN
     OPEN cursor_relatorio;
         saldo_liquido=0;    
         FETCH cursor_relatorio INTO soma_deposito, soma_emprestimo;
-        --RAISE NOTICE 'O valor de DEP é % e EMP é %', soma_deposito, soma_emprestimo;
+        --RAISE NOTICE 'O valor de DEP ï¿½ % e EMP ï¿½ %', soma_deposito, soma_emprestimo;
         IF FOUND THEN 
 	    IF soma_deposito IS NULL then soma_deposito=0; END IF;
 	    IF soma_emprestimo IS NULL then soma_emprestimo=0; END IF;
@@ -46,6 +47,6 @@ $BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100;
 ALTER FUNCTION getliquido(integer, character varying, character varying)
-  OWNER TO postgres;
+  OWNER TO aluno;
 
  create role postgres

@@ -1,10 +1,10 @@
---PRIMEIRO CONFERIMOS COMO EST· A SITUAÁ„O DAS CONTAS
+--PRIMEIRO CONFERIMOS COMO EST√° A SITUA√ß√£O DAS CONTAS
 select * from emprestimo where nome_agencia = 'PUC';
 
---EXECUTAMOS OUTRA CONFERENCIA PARA VER COMO SER„O OS RETORNOS DA PESQUISA
-select conta.*, update_valor_emprestimo1() from conta where nome_agencia = 'PUC';
+--EXECUTAMOS OUTRA CONFERENCIA PARA VER COMO SER√£O OS RETORNOS DA PESQUISA
+select conta.*, update_valor_emprestimo1(numero_conta, nome_agencia, nome_cliente) from conta where nome_agencia = 'PUC';
 
---A DEFINI«√O DA FUN«√O update_valor_emprestimo1
+--A DEFINI√á√ÉO DA FUN√á√ÉO update_valor_emprestimo1
 CREATE OR REPLACE FUNCTION update_valor_emprestimo1(	p_numero_conta integer, 
 							p_nome_agencia character varying, 
 							p_nome_cliente character varying
@@ -16,14 +16,19 @@ DECLARE
     l_valor_juros float;
     cursor_relatorio CURSOR FOR SELECT VALOR_EMPRESTIMO, JUROS_EMPRESTIMO
 	FROM EMPRESTIMO 
-	WHERE NOME_CLIENTE=p_nome_cliente AND NOME_AGENCIA=p_nome_agencia AND NUMERO_CONTA=p_numero_conta;
+	WHERE NOME_CLIENTE=p_nome_cliente 
+	AND NOME_AGENCIA=p_nome_agencia 
+	AND NUMERO_CONTA=p_numero_conta;
 BEGIN
 
-    OPEN;
-	FETCH cursor_relatorio INTO l_valor_emprestimo;
+    open cursor_relatorio;
+	FETCH cursor_relatorio INTO l_valor_emprestimo, l_valor_juros;
 	IF FOUND THEN 
 		l_valor_emprestimo = l_valor_emprestimo * (1+(l_valor_juros)/100);
-		UPDATE EMPRESTIMO SET VALOR_EMPRESTIMO = l_valor_emprestimo;
+		UPDATE EMPRESTIMO SET VALOR_EMPRESTIMO = l_valor_emprestimo
+	where nome_cliente = p_nome_cliente
+	and nome_agencia = p_nome_agencia 
+	and numero_conta = p_numero_conta;
 	END IF;
     CLOSE cursor_relatorio;
     RETURN l_valor_emprestimo;
@@ -32,18 +37,19 @@ $BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100;
 ALTER FUNCTION update_valor_emprestimo1(integer, character varying, character varying)
-  OWNER TO postgres;
+  OWNER TO aluno;
 
 --Lista as quantidades de emprestimos realizados por cada cliente
+ 
 select nome_cliente, count(1) from emprestimo group by nome_cliente order by count(1) desc
 
 --Lista apenas um deles
 select * from emprestimo where nome_cliente = 'Reinaldo Pereira da Silva';
 
---Agora atualiza apenas os valores de emprÈstimos desta pessoa
+--Agora atualiza apenas os valores de empr√©stimos desta pessoa
 update_valor_emprestimo2('Reinaldo Pereira da Silva');
 
---A DEFINI«√O DO PROCEDIMENTO update_valor_emprestimo2
+--A DEFINI√á√ÉO DO PROCEDIMENTO update_valor_emprestimo2
 CREATE OR REPLACE FUNCTION update_valor_emprestimo2(	p_nome_cliente character varying )
   RETURNS void as
 $BODY$
