@@ -7,7 +7,9 @@ from unicodedata import normalize
 #ler um diretorio e criar um vocabulário de todos os arquivos
 #diretorio = r"C:\Users\Zorak\OneDrive\Documentos\Faculdade\documentos"
 
-diretorio = r"C:\Users\Zorak\OneDrive\Documentos\Faculdade\docsMenor"
+#diretorio = r"C:\Users\Zorak\OneDrive\Documentos\Faculdade\docsMenor"
+
+diretorio = r"C:\Users\Zorak\Documents\docs"
 
 os.chdir(diretorio)
 
@@ -50,16 +52,18 @@ vocabulario = open('vocabulario.txt', 'r')
 vocabulario = vocabulario.read().splitlines()
 
 calcIDF = []
-for i in range(len(vocabulario)):
+i=0
+for element in vocabulario:
     calcIDF.append(0)
     for file in os.listdir(diretorio):
         if file.endswith(".txt") and file != "vocabulario.txt":
             text = read_text_file(file)
             text = normalize('NFKD', text).encode('ASCII', 'ignore').decode('ASCII')
             text = text.lower().split()
-            for element in vocabulario:
-                if element in text:
-                    calcIDF[i] += 1
+        
+            if element in text:
+                calcIDF[i] += 1
+    i+=1
          
 
 
@@ -80,7 +84,7 @@ for file in os.listdir(diretorio):
                     contador[i] = contador[i] + 1
             #calculando o tfidf
             if contador[i] > 0 :
-                tfidf[i] = math.log(contador[i])*math.log(5/calcIDF[i])
+                tfidf[i] = (1+math.log(contador[i],2))*math.log((4/calcIDF[i]),2)
 
     if file != 'vocabulario.txt':
         print(file)
