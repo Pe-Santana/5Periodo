@@ -58,16 +58,24 @@ for element in vocabulario:
     for file in os.listdir(diretorio):
         if file.endswith(".txt") and file != "vocabulario.txt":
             text = read_text_file(file)
+            punt = string.punctuation
+            for elements in punt:
+                text = text.replace(elements, "")
+
             text = normalize('NFKD', text).encode('ASCII', 'ignore').decode('ASCII')
             text = text.lower().split()
-        
+
+            #print(text)
+            #print(element)
             if element in text:
                 calcIDF[i] += 1
+                #print(calcIDF[i])
+                #print(i)
     i+=1
          
 
 
-print(calcIDF)           
+#print(calcIDF)           
         
 for file in os.listdir(diretorio):
     contador = []
@@ -84,6 +92,7 @@ for file in os.listdir(diretorio):
                     contador[i] = contador[i] + 1
             #calculando o tfidf
             if contador[i] > 0 :
+                #na segunda função temos : 4 para biblioteca "to do" | 5 x-men | 20 hino times
                 tfidf[i] = (1+math.log(contador[i],2))*math.log((4/calcIDF[i]),2)
 
     if file != 'vocabulario.txt':
@@ -91,4 +100,4 @@ for file in os.listdir(diretorio):
         print(contador)
         print('tfidf:')
         print(tfidf)
-
+        print("\n\n")
