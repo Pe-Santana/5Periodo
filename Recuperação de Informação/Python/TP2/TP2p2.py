@@ -65,17 +65,14 @@ for element in vocabulario:
             text = normalize('NFKD', text).encode('ASCII', 'ignore').decode('ASCII')
             text = text.lower().split()
 
-            #print(text)
-            #print(element)
+            
             if element in text:
                 calcIDF[i] += 1
-                #print(calcIDF[i])
-                #print(i)
+
     i+=1
          
 
 
-#print(calcIDF)           
         
 for file in os.listdir(diretorio):
     contador = []
@@ -84,7 +81,12 @@ for file in os.listdir(diretorio):
         contador.append(0)
         tfidf.append(0)
         if file.endswith(".txt") and file != 'vocabulario.txt':
+
             text = read_text_file(file)
+            punt = string.punctuation
+            for elements in punt:
+                text = text.replace(elements, "")
+
             text = normalize('NFKD', text).encode('ASCII', 'ignore').decode('ASCII')
             text = text.lower().split()
             for element in text:
@@ -97,7 +99,6 @@ for file in os.listdir(diretorio):
 
     if file != 'vocabulario.txt':
         print(file)
-        print(contador)
         print('tfidf:')
         print(tfidf)
         print("\n\n")
