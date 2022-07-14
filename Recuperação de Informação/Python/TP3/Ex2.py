@@ -4,13 +4,11 @@ import unidecode
 import math
 from unicodedata import normalize
 import numpy
+import nltk
 
 # ler um diretorio e criar um vocabulário de todos os arquivos
-#diretorio = r"C:\Users\Zorak\OneDrive\Documentos\Faculdade\documentos"
+diretorio = r"C:\Users\Zorak\Documents\docs\hinos"
 
-#diretorio = r"C:\Users\Zorak\OneDrive\Documentos\Faculdade\docsMenor"
-
-diretorio = r"C:\Users\Zorak\Documents\docs"
 
 os.chdir(diretorio)
 
@@ -18,6 +16,27 @@ os.chdir(diretorio)
 def read_text_file(file_name):
     with open(file_name, 'r') as f:
         return f.read()
+
+# stopwords
+
+
+def getStopwords():
+  nltk.download('stopwords')
+  stopwords = nltk.corpus.stopwords.words('portuguese')
+  stopwordsUni = []
+  for i in stopwords:
+    stopwordsUni.append(unidecode.unidecode(i))
+  stopwordsUni = list(dict.fromkeys(stopwordsUni))
+
+  return stopwordsUni
+
+stopwords = getStopwords()
+
+def vocabStop(vocabulario):
+    for i in stopwords:
+        while i in vocabulario:
+            vocabulario.remove(i)
+    return vocabulario
 
 # calcula o TF-IDF dos termos para cada documento
 
@@ -69,7 +88,7 @@ def calculaTFIDF(vocabulario, diretorio):
                 if calcTF[i] > 0:
                     # na segunda função temos : 4 para biblioteca "to do" | 5 x-men | 20 hino times
                     tfidf[i] = (1+math.log(calcTF[i], 2)) * \
-                        math.log((4/calcIDF[i]), 2)
+                        math.log((20/calcIDF[i]), 2)
 
         if file != 'vocabulario.txt':
             resultado.append(tfidf)
@@ -80,7 +99,7 @@ def calculaTFIDF(vocabulario, diretorio):
 
 
 def calculaTFIDFConsulta(vocabulario, diretorio, consulta):
-    # removendo a pontuação da consulta
+    # removendo a pontuação da consulta e stop words
     punt = string.punctuation
     for elements in punt:
         consulta = consulta.replace(elements, "")
@@ -90,6 +109,9 @@ def calculaTFIDFConsulta(vocabulario, diretorio, consulta):
     consulta = consulta.lower().split()
     consulta.sort()
 
+    for i in stopwords:
+        while i in consulta:
+            consulta.remove(i)
     # calcula IDF dos docs
     vocabulario = open('vocabulario.txt', 'r')
     vocabulario = vocabulario.read().splitlines()
@@ -174,10 +196,15 @@ def calculaSimilar(vocab, diretorio, consulta):
 
 
 vocabulario = open('vocabulario.txt', 'r')
-
+vocabulario = vocabulario.read().splitlines()
 # tfidfDOC = calculaTFIDF(vocabulario, os.chdir(diretorio))
 
 # print(tfidfDOC)
+
+print(vocabulario)
+vocabulario = vocabStop(vocabulario)
+print("\n\n")
+print(vocabulario)
 
 q1 = input("Digite a consulta: ")
 

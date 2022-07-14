@@ -9,7 +9,7 @@ from unicodedata import normalize
 
 #diretorio = r"C:\Users\Zorak\OneDrive\Documentos\Faculdade\docsMenor"
 
-diretorio = r"C:\Users\Zorak\Documents\docs"
+diretorio = r"C:\Users\Zorak\Documents\docs\hinos"
 
 os.chdir(diretorio)
 
