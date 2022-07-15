@@ -4,7 +4,8 @@ import unidecode
 import math
 from unicodedata import normalize
 import numpy
-import nltk
+import nltk 
+from nltk.stem import PorterStemmer
 
 # ler um diretorio e criar um vocabulário de todos os arquivos
 diretorio = r"C:\Users\Zorak\Documents\docs\hinos"
@@ -31,12 +32,16 @@ def getStopwords():
   return stopwordsUni
 
 stopwords = getStopwords()
+stemmer = PorterStemmer()
 
 def vocabStop(vocabulario):
     for i in stopwords:
         while i in vocabulario:
             vocabulario.remove(i)
-    return vocabulario
+    vocabRad = []
+    for i in range(len(vocabulario)):
+        vocabRad.append(stemmer.stem(vocabulario[i]))
+    return vocabRad
 
 # calcula o TF-IDF dos termos para cada documento
 
@@ -112,6 +117,10 @@ def calculaTFIDFConsulta(vocabulario, diretorio, consulta):
     for i in stopwords:
         while i in consulta:
             consulta.remove(i)
+    
+    consultaRad=[]
+    for i in range(len(consulta)):
+        consultaRad.append(stemmer.stem(consulta[i]))
     # calcula IDF dos docs
     vocabulario = open('vocabulario.txt', 'r')
     vocabulario = vocabulario.read().splitlines()
@@ -141,7 +150,7 @@ def calculaTFIDFConsulta(vocabulario, diretorio, consulta):
     for i in range(len(vocabulario)):
         calcTF.append(0)
         tfidf.append(0)
-        for elements in consulta:
+        for elements in consultaRad:
             if elements == vocabulario[i]:
                 calcTF[i] = calcTF[i] + 1
     # print("teste")
@@ -176,7 +185,6 @@ def calculaSimilaridade(vetorA, vetorDocs):
             j += 1
 
     return similaridade
-
 #mostra o mais similar
 
 def mostraDocSimilar(vetorSimilaridade, diretorio):
@@ -198,7 +206,7 @@ def mostraDocSimilar(vetorSimilaridade, diretorio):
 
 
 def calculaSimilar(vocab, diretorio, consulta):
-    docs = 1
+    docs =1
     tfidfDOC = calculaTFIDF(vocab,diretorio)
 
     tfidfQ1 = calculaTFIDFConsulta(vocab, diretorio, consulta)
@@ -206,10 +214,9 @@ def calculaSimilar(vocab, diretorio, consulta):
     similar = calculaSimilaridade(tfidfQ1, tfidfDOC)
 
     for element in similar:
-        print("Escore - Documento", docs, ".txt:", similar[docs-1])
+        print("Escore - ", docs, ".txt:", similar[docs-1])
         docs += 1
     mostraDocSimilar(similar, diretorio)
-
 # codigo
 
 
@@ -236,5 +243,3 @@ q1 = input("Digite a consulta: ")
 
 
 calculaSimilar(vocabulario,os.chdir(diretorio),q1)
-
-
